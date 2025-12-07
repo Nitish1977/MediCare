@@ -1,38 +1,36 @@
-# 🩺 MediBook — Doctor Appointment Booking System
+# 🌐 MediCare — Modern Healthcare Management Website
+**Built with Django | Tailwind CSS | HTML**
 
-A clean, responsive, and user‑friendly **Doctor Appointment Web Application** built using **Django** and **TailwindCSS**.  
-This project simplifies the process of browsing doctors, checking availability, and booking appointments — all through a smooth and intuitive interface.
+A clean, responsive, and modern healthcare management platform designed to simplify patient interaction, appointment handling, and medical record access. MediCare focuses on a seamless user experience, fast performance, and secure backend logic using Django.
 
 ---
 
 ## 🚀 Features
 
-- ✅ Browse doctors by specialization  
-- ✅ Book, view, and manage appointments  
-- ✅ Secure authentication for patients & doctors  
-- ✅ Fully responsive UI (mobile, tablet, desktop)  
-- ✅ Clean and minimal TailwindCSS‑based design  
-- ✅ Fast, lightweight, and easy to navigate  
+- **User Authentication** (Login / Register)
+- **Doctor & Patient Dashboard**
+- **Appointment Booking System**
+- **Responsive UI using Tailwind CSS**
+- **Medical Records Management**
+- **Admin Panel for Full Control**
+- **Clean & Minimalist UI**
+- **Secure Django Backend**
 
 ---
 
 ## 🛠️ Tech Stack
 
-| Layer | Technology |
-|-------|------------|
-| **Frontend** | Tailwind CSS |
-| **Backend** | Django |
-| **Database** | SQLite / PostgreSQL |
-| **Authentication** | Django Auth System |
-| **Deployment** | *(Add hosting platform here)* |
+| Technology        | Description                  |
+|------------------|------------------------------|
+| **Django**       | Backend Framework            |
+| **Tailwind CSS** | Styling & Responsive Design  |
+| **HTML5**        | UI Structure                 |
+| **SQLite / PostgreSQL** | Database (customizable) |
 
 ---
 
 ## 📸 Screenshots
 
-> Add your screenshots here  
-> Example: Homepage, Login, Appointment Booking, Doctor Dashboard
+> Add your project screenshots inside the `screenshots/` folder  
+> Replace these paths with your actual images
 
----
-
-## 📂 Project Structure
