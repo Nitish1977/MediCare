@@ -1,0 +1,282 @@
+{% extends 'base.html' %}
+
+{% block title %}Patient Dashboard{% endblock %}
+
+{% block content %}
+<div class="py-8 animate-fadeIn">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Welcome Card -->
+        <div class="mb-8">
+            <div class="bg-white rounded-2xl shadow-xl p-8 transform transition-all duration-500 hover:shadow-2xl hover-lift">
+                <div class="flex items-start justify-between">
+                    <div class="flex items-center gap-6">
+                        <div class="w-20 h-20 rounded-2xl gradient-bg flex items-center justify-center text-white text-2xl font-bold animate-pulse-glow">
+                            <i class="fas fa-user-injured"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-4xl font-bold text-gray-800 mb-2">Welcome {{ user.get_full_name|default:user.username }}</h2>
+                            <p class="text-gray-600 text-lg mb-4">Patient ID: <span class="font-semibold text-blue-600">{{ patient.id }}</span></p>
+                            
+                            <!-- Current Date and Time -->
+                            <div class="flex items-center gap-6 text-sm text-gray-500">
+                                <div class="flex items-center gap-2">
+                                    <i class="fas fa-calendar-day text-blue-500"></i>
+                                    <span id="current-date" class="font-semibold"></span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <i class="fas fa-clock text-blue-500"></i>
+                                    <span id="current-time" class="font-semibold"></span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <i class="fas fa-calendar-alt text-blue-500"></i>
+                                    <span id="current-day" class="font-semibold"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+    
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+            <!-- Book Appointment Card -->
+            <div class="bg-white rounded-2xl shadow-xl p-8 hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 group animate-fadeIn" style="animation-delay: 0.1s">
+                <div class="text-center">
+                    <div class="w-16 h-16 rounded-2xl gradient-bg flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+                        <i class="fas fa-calendar-plus text-2xl text-white"></i>
+                    </div>
+                    <h4 class="text-2xl font-bold text-gray-800 mb-3">Book Appointment</h4>
+                    <p class="text-gray-600 mb-6">Schedule a new appointment with a doctor</p>
+                    <a href="{% url 'patients:book_appointment' %}" class="inline-flex items-center gap-2 px-8 py-3 gradient-bg text-white rounded-xl hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 font-semibold group">
+                        <i class="fas fa-plus-circle group-hover:scale-110 transition-transform"></i>
+                        Book Now
+                        <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- My Appointments Card -->
+            <div class="bg-white rounded-2xl shadow-xl p-8 hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 group animate-fadeIn" style="animation-delay: 0.2s">
+                <div class="text-center">
+                    <div class="w-16 h-16 rounded-2xl bg-gradient-to-r from-teal-500 to-cyan-600 flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+                        <i class="fas fa-calendar-check text-2xl text-white"></i>
+                    </div>
+                    <h4 class="text-2xl font-bold text-gray-800 mb-3">My Appointments</h4>
+                    <p class="text-gray-600 mb-6">View and manage your appointments</p>
+                    <a href="{% url 'appointments:list_appointments' %}" class="inline-flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-teal-600 to-cyan-700 text-white rounded-xl hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 font-semibold group">
+                        <i class="fas fa-list-alt group-hover:scale-110 transition-transform"></i>
+                        View Appointments
+                        <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Appointments -->
+        <div class="bg-white rounded-2xl shadow-xl p-8 transform transition-all duration-500 hover:shadow-2xl hover-lift animate-fadeIn" style="animation-delay: 0.3s">
+            <div class="flex items-center justify-between mb-8">
+                <h4 class="text-3xl font-bold text-gray-800 flex items-center gap-3">
+                    <i class="fas fa-history text-blue-500"></i>
+                    Recent Appointments
+                </h4>
+                <span class="px-4 py-2 gradient-bg text-white rounded-xl font-semibold text-sm">
+                    {{ appointments|length }} Total
+                </span>
+            </div>
+
+            {% if appointments %}
+                <div class="overflow-x-auto rounded-2xl border border-gray-200">
+                    <table class="w-full">
+                        <thead class="gradient-bg text-white">
+                            <tr>
+                                <th class="px-6 py-4 font-semibold text-left">Date & Time</th>
+                                <th class="px-6 py-4 font-semibold text-left">Doctor</th>
+                                <th class="px-6 py-4 font-semibold text-left">Specialization</th>
+                                <th class="px-6 py-4 font-semibold text-center">Status</th>
+                                <th class="px-6 py-4 font-semibold text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100">
+                            {% for appointment in appointments %}
+                            <tr class="hover:bg-gray-50 transition-all duration-300 group">
+                                <td class="px-6 py-4">
+                                    <div class="text-gray-800 font-semibold">{{ appointment.appointment_date }}</div>
+                                    <div class="text-gray-600 text-sm">{{ appointment.appointment_time }}</div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="text-gray-800 font-semibold">Dr. {{ appointment.doctor.user.get_full_name }}</div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="text-gray-600">{{ appointment.doctor.specialization }}</span>
+                                </td>
+                                <td class="px-6 py-4 text-center">
+                                    {% if appointment.status == 'CONFIRMED' %}
+                                        <span class="inline-flex items-center gap-1 px-4 py-2 bg-green-100 text-green-800 rounded-full text-sm font-semibold border border-green-200">
+                                            <i class="fas fa-check-circle"></i>
+                                            {{ appointment.status }}
+                                        </span>
+                                    {% elif appointment.status == 'PENDING' %}
+                                        <span class="inline-flex items-center gap-1 px-4 py-2 bg-yellow-100 text-yellow-800 rounded-full text-sm font-semibold border border-yellow-200">
+                                            <i class="fas fa-clock"></i>
+                                            {{ appointment.status }}
+                                        </span>
+                                    {% elif appointment.status == 'CANCELLED' %}
+                                        <span class="inline-flex items-center gap-1 px-4 py-2 bg-red-100 text-red-800 rounded-full text-sm font-semibold border border-red-200">
+                                            <i class="fas fa-times-circle"></i>
+                                            {{ appointment.status }}
+                                        </span>
+                                    {% elif appointment.status == 'COMPLETED' %}
+                                        <span class="inline-flex items-center gap-1 px-4 py-2 bg-blue-100 text-blue-800 rounded-full text-sm font-semibold border border-blue-200">
+                                            <i class="fas fa-check-double"></i>
+                                            {{ appointment.status }}
+                                        </span>
+                                    {% else %}
+                                        <span class="inline-flex items-center gap-1 px-4 py-2 bg-gray-100 text-gray-800 rounded-full text-sm font-semibold border border-gray-200">
+                                            <i class="fas fa-info-circle"></i>
+                                            {{ appointment.status }}
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex gap-2 justify-center">
+                                        <a href="{% url 'appointments:appointment_detail' appointment.id %}" 
+                                           class="inline-flex items-center gap-1 px-4 py-2 gradient-bg text-white rounded-xl hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 text-sm font-semibold group">
+                                            <i class="fas fa-eye group-hover:scale-110"></i>
+                                            Details
+                                        </a>
+                                        {% if appointment.can_cancel %}
+                                            <form method="post" action="{% url 'patients:cancel_appointment' appointment.id %}"
+                                                  class="inline"
+                                                  onsubmit="return confirm('Are you sure you want to cancel this appointment?');">
+                                                {% csrf_token %}
+                                                <button type="submit" class="inline-flex items-center gap-1 px-4 py-2 bg-gradient-to-r from-red-600 to-pink-600 text-white rounded-xl hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 text-sm font-semibold group">
+                                                    <i class="fas fa-times group-hover:scale-110"></i>
+                                                    Cancel
+                                                </button>
+                                            </form>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <!-- Empty State -->
+                <div class="text-center py-12">
+                    <div class="w-24 h-24 rounded-2xl bg-gray-100 flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-calendar-times text-gray-400 text-3xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">No Appointments Yet</h3>
+                    <p class="text-gray-600 max-w-md mx-auto mb-8">You haven't booked any appointments yet. Schedule your first appointment to get started with your healthcare journey.</p>
+                    <a href="{% url 'patients:book_appointment' %}" class="inline-flex items-center gap-2 px-8 py-3 gradient-bg text-white rounded-xl hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 font-semibold group">
+                        <i class="fas fa-calendar-plus group-hover:scale-110"></i>
+                        Book Your First Appointment
+                        <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1"></i>
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+.animate-fadeIn {
+    animation: fadeIn 0.6s ease-out forwards;
+    opacity: 0;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.hover-lift {
+    transition: all 0.3s ease;
+}
+
+.hover-lift:hover {
+    transform: translateY(-5px);
+}
+
+.gradient-bg {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.animate-pulse-glow {
+    animation: pulse-glow 2s infinite;
+}
+
+@keyframes pulse-glow {
+    0%, 100% { 
+        box-shadow: 0 0 5px rgba(102, 126, 234, 0.5); 
+    }
+    50% { 
+        box-shadow: 0 0 20px rgba(102, 126, 234, 0.8); 
+    }
+}
+
+/* Custom table styling */
+table {
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+thead th:first-child {
+    border-top-left-radius: 12px;
+}
+
+thead th:last-child {
+    border-top-right-radius: 12px;
+}
+</style>
+
+<script>
+// Update current date, time, and day
+function updateDateTime() {
+    const now = new Date();
+    
+    // Format date
+    const optionsDate = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    const dateString = now.toLocaleDateString('en-US', optionsDate);
+    
+    // Format time
+    const timeString = now.toLocaleTimeString('en-US', { 
+        hour: '2-digit', 
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true 
+    });
+    
+    // Format day
+    const optionsDay = { weekday: 'long' };
+    const dayString = now.toLocaleDateString('en-US', optionsDay);
+    
+    document.getElementById('current-date').textContent = dateString;
+    document.getElementById('current-time').textContent = timeString;
+    document.getElementById('current-day').textContent = dayString;
+}
+
+// Update every second
+updateDateTime();
+setInterval(updateDateTime, 1000);
+
+// Add animation delays for stats cards
+document.addEventListener('DOMContentLoaded', function() {
+    const statsCards = document.querySelectorAll('.bg-gradient-to-br');
+    statsCards.forEach((card, index) => {
+        card.style.animationDelay = `${(index * 0.1) + 0.4}s`;
+    });
+});
+</script>
+{% endblock %}

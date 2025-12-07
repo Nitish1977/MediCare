@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Hospital Management System{% endblock %}</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { 
+            font-family: 'Inter', sans-serif; 
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(-20px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 5px rgba(59, 130, 246, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.8); }
+        }
+        
+        .animate-fadeIn { animation: fadeIn 0.5s ease-out forwards; }
+        .animate-slideIn { animation: slideIn 0.4s ease-out forwards; }
+        .animate-pulse-glow { animation: pulse-glow 2s infinite; }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .hover-lift {
+            transition: all 0.3s ease;
+        }
+        
+        .hover-lift:hover {
+            transform: translateY(-5px);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 gradient-bg shadow-xl">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <a class="flex items-center text-white font-bold text-2xl hover:text-blue-100 transition-all duration-300 transform hover:scale-105" href="{% url 'home' %}">
+                    <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center mr-3 animate-pulse-glow">
+                        <i class="fas fa-hospital-alt"></i>
+                    </div>
+                    MediCare <span class="font-light ml-1">System</span>
+                </a>
+                
+                <button class="md:hidden text-white p-2 rounded-lg bg-white/10 hover:bg-white/20 transition" type="button" onclick="toggleMobileMenu()">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+                
+                <div id="navMenu" class="hidden md:flex items-center space-x-1">
+                    {% if user.is_authenticated %}
+                        {% if user.doctor %}
+                            <a class="text-white hover:bg-white/20 px-4 py-2 rounded-xl transition-all duration-300 flex items-center group" href="{% url 'doctors:dashboard' %}">
+                                <i class="fas fa-tachometer-alt mr-2 group-hover:scale-110 transition-transform"></i>
+                                <span>Dashboard</span>
+                            </a>
+                            <a class="text-white hover:bg-white/20 px-4 py-2 rounded-xl transition-all duration-300 flex items-center group" href="{% url 'appointments:list_appointments' %}">
+                                <i class="fas fa-calendar-check mr-2 group-hover:scale-110 transition-transform"></i>
+                                <span>Appointments</span>
+                            </a>
+                            <a class="text-white hover:bg-white/20 px-4 py-2 rounded-xl transition-all duration-300 flex items-center group" href="{% url 'doctors:schedule' %}">
+                                <i class="fas fa-clock mr-2 group-hover:scale-110 transition-transform"></i>
+                                <span>Schedule</span>
+                            </a>
+                        {% elif user.patient %}
+                            <a class="text-white hover:bg-white/20 px-4 py-2 rounded-xl transition-all duration-300 flex items-center group" href="{% url 'patients:dashboard' %}">
+                                <i class="fas fa-tachometer-alt mr-2 group-hover:scale-110 transition-transform"></i>
+                                <span>Dashboard</span>
+                            </a>
+                            <a class="text-white hover:bg-white/20 px-4 py-2 rounded-xl transition-all duration-300 flex items-center group" href="{% url 'patients:book_appointment' %}">
+                                <i class="fas fa-calendar-plus mr-2 group-hover:scale-110 transition-transform"></i>
+                                <span>Book Appointment</span>
+                            </a>
+                            <a class="text-white hover:bg-white/20 px-4 py-2 rounded-xl transition-all duration-300 flex items-center group" href="{% url 'appointments:list_appointments' %}">
+                                <i class="fas fa-list-alt mr-2 group-hover:scale-110 transition-transform"></i>
+                                <span>My Appointments</span>
+                            </a>
+                        {% endif %}
+                    {% else %}
+                        <a class="text-white hover:bg-white/20 px-4 py-2 rounded-xl transition-all duration-300 flex items-center group" href="{% url 'home' %}">
+                            <i class="fas fa-home mr-2 group-hover:scale-110 transition-transform"></i>
+                            <span>Home</span>
+                        </a>
+                        <a class="text-white hover:bg-white/20 px-4 py-2 rounded-xl transition-all duration-300 flex items-center group" href="#about">
+                            <i class="fas fa-info-circle mr-2 group-hover:scale-110 transition-transform"></i>
+                            <span>About</span>
+                        </a>
+                        <a class="text-white hover:bg-white/20 px-4 py-2 rounded-xl transition-all duration-300 flex items-center group" href="#features">
+                            <i class="fas fa-star mr-2 group-hover:scale-110 transition-transform"></i>
+                            <span>Features</span>
+                        </a>
+                    {% endif %}
+                </div>
+                
+                <div class="hidden md:flex items-center space-x-2">
+                    {% if user.is_authenticated %}
+                        <!-- Notifications dropdown -->
+                        <div class="relative group">
+                            <button class="text-white hover:bg-white/20 p-2 rounded-xl transition-all duration-300 relative flex items-center">
+                                <i class="fas fa-bell text-lg"></i>
+                                {% if unread_notifications_count and unread_notifications_count > 0 %}
+                                    <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center animate-pulse">{{ unread_notifications_count }}</span>
+                                {% endif %}
+                            </button>
+                            <div class="hidden group-hover:block absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-2xl z-50 overflow-hidden animate-fadeIn">
+                                <div class="p-4 border-b border-gray-100">
+                                    <h3 class="font-semibold text-gray-800">Notifications</h3>
+                                </div>
+                                {% if notifications %}
+                                    <div class="max-h-80 overflow-y-auto">
+                                        {% for n in notifications %}
+                                            <a href="{{ n.get_absolute_url }}" class="block px-4 py-3 hover:bg-blue-50 transition-all duration-200 border-b border-gray-100 last:border-b-0">
+                                                <div class="font-medium text-sm text-gray-800">{% if n.actor %}{{ n.actor.get_full_name|default:n.actor.username }}{% endif %}</div>
+                                                <div class="text-sm text-gray-600 mt-1">{{ n.verb }}</div>
+                                                <div class="text-xs text-gray-500 mt-1">{{ n.created_at|date:"M d, H:i" }}</div>
+                                            </a>
+                                        {% endfor %}
+                                    </div>
+                                    <a href="{% url 'appointments:notifications_list' %}" class="block px-4 py-3 text-center text-blue-600 hover:bg-gray-50 border-t border-gray-100 text-sm font-medium transition-all">View all notifications</a>
+                                {% else %}
+                                    <div class="px-4 py-6 text-gray-500 text-sm text-center">
+                                        <i class="fas fa-bell-slash text-2xl mb-2 text-gray-300"></i>
+                                        <p>No notifications</p>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        {% if user.doctor %}
+                            <a class="text-white hover:bg-white/20 px-4 py-2 rounded-xl transition-all duration-300 flex items-center group" href="{% url 'doctors:profile' %}">
+                                <i class="fas fa-user-md mr-2 group-hover:scale-110 transition-transform"></i>
+                                <span>Profile</span>
+                            </a>
+                        {% elif user.patient %}
+                            <a class="text-white hover:bg-white/20 px-4 py-2 rounded-xl transition-all duration-300 flex items-center group" href="{% url 'patients:profile' %}">
+                                <i class="fas fa-user mr-2 group-hover:scale-110 transition-transform"></i>
+                                <span>Profile</span>
+                            </a>
+                        {% endif %}
+                        
+                        <form method="post" action="{% url 'logout' %}" class="inline">
+                            {% csrf_token %}
+                            <button type="submit" class="text-white hover:bg-white/20 px-4 py-2 rounded-xl transition-all duration-300 flex items-center group">
+                                <i class="fas fa-sign-out-alt mr-2 group-hover:scale-110 transition-transform"></i>
+                                <span>Logout</span>
+                            </button>
+                        </form>
+                    {% else %}
+                        <a class="text-white hover:bg-white/20 px-4 py-2 rounded-xl transition-all duration-300 flex items-center group" href="{% url 'login' %}">
+                            <i class="fas fa-sign-in-alt mr-2 group-hover:scale-110 transition-transform"></i>
+                            <span>Login</span>
+                        </a>
+                        
+                        <div class="relative group">
+                            <button class="text-white hover:bg-white/20 px-4 py-2 rounded-xl transition-all duration-300 flex items-center group">
+                                <i class="fas fa-user-plus mr-2 group-hover:scale-110 transition-transform"></i>
+                                <span>Register</span>
+                                <i class="fas fa-chevron-down ml-1 text-xs transition-transform group-hover:rotate-180"></i>
+                            </button>
+                            <div class="hidden group-hover:block absolute right-0 mt-2 w-48 bg-white rounded-2xl shadow-2xl z-50 overflow-hidden animate-fadeIn">
+                                <a href="{% url 'doctors:register' %}" class="block px-4 py-3 hover:bg-blue-50 transition-all duration-200 flex items-center">
+                                    <i class="fas fa-user-md mr-3 text-blue-500"></i>
+                                    <span>Register as Doctor</span>
+                                </a>
+                                <a href="{% url 'patients:register' %}" class="block px-4 py-3 hover:bg-blue-50 transition-all duration-200 flex items-center border-t border-gray-100">
+                                    <i class="fas fa-user mr-3 text-blue-500"></i>
+                                    <span>Register as Patient</span>
+                                </a>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Mobile menu -->
+            <div id="mobileMenu" class="md:hidden hidden glass-effect rounded-2xl mt-2 p-4 animate-fadeIn">
+                {% if user.is_authenticated %}
+                    {% if user.doctor %}
+                        <a class="block text-white hover:bg-white/20 px-4 py-3 rounded-xl transition mb-2" href="{% url 'doctors:dashboard' %}">
+                            <i class="fas fa-tachometer-alt mr-2"></i> Dashboard
+                        </a>
+                        <a class="block text-white hover:bg-white/20 px-4 py-3 rounded-xl transition mb-2" href="{% url 'appointments:list_appointments' %}">
+                            <i class="fas fa-calendar-check mr-2"></i> Appointments
+                        </a>
+                        <a class="block text-white hover:bg-white/20 px-4 py-3 rounded-xl transition mb-2" href="{% url 'doctors:schedule' %}">
+                            <i class="fas fa-clock mr-2"></i> Schedule
+                        </a>
+                        <a class="block text-white hover:bg-white/20 px-4 py-3 rounded-xl transition mb-2" href="{% url 'doctors:profile' %}">
+                            <i class="fas fa-user-md mr-2"></i> Profile
+                        </a>
+                    {% elif user.patient %}
+                        <a class="block text-white hover:bg-white/20 px-4 py-3 rounded-xl transition mb-2" href="{% url 'patients:dashboard' %}">
+                            <i class="fas fa-tachometer-alt mr-2"></i> Dashboard
+                        </a>
+                        <a class="block text-white hover:bg-white/20 px-4 py-3 rounded-xl transition mb-2" href="{% url 'patients:book_appointment' %}">
+                            <i class="fas fa-calendar-plus mr-2"></i> Book Appointment
+                        </a>
+                        <a class="block text-white hover:bg-white/20 px-4 py-3 rounded-xl transition mb-2" href="{% url 'appointments:list_appointments' %}">
+                            <i class="fas fa-list-alt mr-2"></i> My Appointments
+                        </a>
+                        <a class="block text-white hover:bg-white/20 px-4 py-3 rounded-xl transition mb-2" href="{% url 'patients:profile' %}">
+                            <i class="fas fa-user mr-2"></i> Profile
+                        </a>
+                    {% endif %}
+                    <form method="post" action="{% url 'logout' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="w-full text-left text-white hover:bg-white/20 px-4 py-3 rounded-xl transition flex items-center">
+                            <i class="fas fa-sign-out-alt mr-2"></i> Logout
+                        </button>
+                    </form>
+                {% else %}
+                    <a class="block text-white hover:bg-white/20 px-4 py-3 rounded-xl transition mb-2" href="{% url 'home' %}">
+                        <i class="fas fa-home mr-2"></i> Home
+                    </a>
+                    <a class="block text-white hover:bg-white/20 px-4 py-3 rounded-xl transition mb-2" href="#about">
+                        <i class="fas fa-info-circle mr-2"></i> About
+                    </a>
+                    <a class="block text-white hover:bg-white/20 px-4 py-3 rounded-xl transition mb-2" href="#features">
+                        <i class="fas fa-star mr-2"></i> Features
+                    </a>
+                    <a class="block text-white hover:bg-white/20 px-4 py-3 rounded-xl transition mb-2" href="{% url 'login' %}">
+                        <i class="fas fa-sign-in-alt mr-2"></i> Login
+                    </a>
+                    <a class="block text-white hover:bg-white/20 px-4 py-3 rounded-xl transition mb-2" href="{% url 'doctors:register' %}">
+                        <i class="fas fa-user-md mr-2"></i> Register as Doctor
+                    </a>
+                    <a class="block text-white hover:bg-white/20 px-4 py-3 rounded-xl transition" href="{% url 'patients:register' %}">
+                        <i class="fas fa-user mr-2"></i> Register as Patient
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-1">
+        {% block content %}
+        <!-- Content will be overridden by child templates -->
+        {% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gradient-to-br from-gray-900 to-gray-800 text-white mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+            <div class="grid md:grid-cols-4 gap-10 mb-12">
+                <div>
+                    <h5 class="text-2xl font-bold mb-6 flex items-center">
+                        <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center mr-3">
+                            <i class="fas fa-hospital-alt"></i>
+                        </div>
+                        MediCare System
+                    </h5>
+                    <p class="text-gray-400 mb-6">Providing advanced healthcare management solutions for modern medical facilities.</p>
+                    <div class="flex gap-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition-all duration-300 w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-all duration-300 w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-all duration-300 w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-all duration-300 w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                    </div>
+                </div>
+                <div>
+                    <h5 class="font-bold text-lg mb-6">Quick Links</h5>
+                    <ul class="space-y-3">
+                        <li><a href="{% url 'home' %}" class="text-gray-400 hover:text-white transition flex items-center group"><i class="fas fa-chevron-right text-xs mr-2 group-hover:translate-x-1 transition-transform"></i> Home</a></li>
+                        <li><a href="#about" class="text-gray-400 hover:text-white transition flex items-center group"><i class="fas fa-chevron-right text-xs mr-2 group-hover:translate-x-1 transition-transform"></i> About Us</a></li>
+                        <li><a href="#features" class="text-gray-400 hover:text-white transition flex items-center group"><i class="fas fa-chevron-right text-xs mr-2 group-hover:translate-x-1 transition-transform"></i> Features</a></li>
+                        <li><a href="{% url 'login' %}" class="text-gray-400 hover:text-white transition flex items-center group"><i class="fas fa-chevron-right text-xs mr-2 group-hover:translate-x-1 transition-transform"></i> Login</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="font-bold text-lg mb-6">Services</h5>
+                    <ul class="space-y-3">
+                        <li><a href="{% url 'patients:book_appointment' %}" class="text-gray-400 hover:text-white transition flex items-center group"><i class="fas fa-chevron-right text-xs mr-2 group-hover:translate-x-1 transition-transform"></i> Appointments</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition flex items-center group"><i class="fas fa-chevron-right text-xs mr-2 group-hover:translate-x-1 transition-transform"></i> Health Records</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition flex items-center group"><i class="fas fa-chevron-right text-xs mr-2 group-hover:translate-x-1 transition-transform"></i> Pharmacy</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition flex items-center group"><i class="fas fa-chevron-right text-xs mr-2 group-hover:translate-x-1 transition-transform"></i> Emergency</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="font-bold text-lg mb-6">Contact Us</h5>
+                    <ul class="space-y-4 text-gray-400">
+                        <li class="flex items-start">
+                            <i class="fas fa-map-marker-alt mr-3 mt-1 text-blue-400"></i>
+                            <span>123 Healthcare St, Medical City</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-phone mr-3 text-green-400"></i>
+                            <span>+1 (555) 123-4567</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-envelope mr-3 text-purple-400"></i>
+                            <span>info@hospitalms.com</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 pt-8 text-center text-gray-400">
+                <p>&copy; 2025 MediCare Hospital Management System. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function toggleMobileMenu() {
+            const mobileMenu = document.getElementById('mobileMenu');
+            mobileMenu.classList.toggle('hidden');
+        }
+        
+        // Add animation delays for elements
+        document.addEventListener('DOMContentLoaded', function() {
+            const animatedElements = document.querySelectorAll('.animate-fadeIn, .animate-slideIn');
+            animatedElements.forEach((el, index) => {
+                if (!el.style.animationDelay) {
+                    el.style.animationDelay = `${index * 0.1}s`;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

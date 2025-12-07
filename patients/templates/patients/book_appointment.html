@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block title %}Book Appointment{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="text-center">Book an Appointment</h2>
+                </div>
+                <div class="card-body">
+                    {% if slots %}
+                        <h5>Available slots for Dr. {{ selected_doctor.user.get_full_name }} on {{ selected_date }}</h5>
+                        {% if slots %}
+                            <form method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="book_slot">
+                                <input type="hidden" name="doctor" value="{{ selected_doctor.id }}">
+                                <input type="hidden" name="appointment_date" value="{{ selected_date }}">
+                                <div class="mb-3">
+                                    <label class="form-label">Choose a time</label>
+                                    <div class="d-flex flex-wrap gap-2">
+                                        {% for t in slots %}
+                                            <label class="btn btn-outline-primary">
+                                                <input type="radio" name="appointment_time" value="{{ t }}" required> {{ t }}
+                                            </label>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="reason" class="form-label">Reason</label>
+                                    <textarea name="reason" id="reason" class="form-control" rows="3"></textarea>
+                                </div>
+                                <div class="d-grid gap-2">
+                                    <button type="submit" class="btn btn-success">Confirm Appointment</button>
+                                    <a href="{% url 'patients:book_appointment' %}" class="btn btn-secondary">Back</a>
+                                </div>
+                            </form>
+                        {% endif %}
+                    {% else %}
+                        <form method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="find_slots">
+                            {% for field in form %}
+                                <div class="mb-3">
+                                    <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                                    {{ field }}
+                                    {% if field.help_text %}
+                                        <small class="form-text text-muted">{{ field.help_text }}</small>
+                                    {% endif %}
+                                    {% for error in field.errors %}
+                                        <div class="alert alert-danger">{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endfor %}
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary">Find Available Slots</button>
+                            </div>
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

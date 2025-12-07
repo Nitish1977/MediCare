@@ -1,0 +1,331 @@
+{% extends 'base.html' %}
+
+{% block title %}Doctor Profile{% endblock %}
+
+{% block content %}
+<div class="min-h-screen py-8 animate-fadeIn">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <div class="w-20 h-20 rounded-2xl gradient-bg flex items-center justify-center mx-auto mb-6 animate-pulse-glow">
+                <i class="fas fa-user-md text-white text-3xl"></i>
+            </div>
+            <h1 class="text-4xl font-bold text-gray-800 mb-4">Doctor Profile</h1>
+            <p class="text-xl text-gray-600 max-w-2xl mx-auto">Update your professional information and medical credentials</p>
+        </div>
+
+        <!-- Profile Form -->
+        <div class="bg-white rounded-3xl shadow-2xl overflow-hidden transform transition-all duration-500 hover:shadow-3xl hover-lift">
+            <!-- Form Header -->
+            <div class="gradient-bg text-white px-8 py-6 text-center">
+                <h2 class="text-2xl font-bold flex items-center justify-center gap-3">
+                    <i class="fas fa-user-circle"></i>
+                    Professional Information
+                </h2>
+            </div>
+
+            <!-- Form Body -->
+            <div class="p-8">
+                <form method="post" class="space-y-8">
+                    {% csrf_token %}
+                    
+                    {% for field in form %}
+                        <div class="animate-slideIn form-field-{{ forloop.counter0 }}">
+                            <label for="{{ field.id_for_label }}" class="block text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                                <i class="fas fa-{% cycle 'user' 'envelope' 'id-card' 'graduation-cap' 'stethoscope' 'map-marker-alt' 'phone' 'file-medical' %} mr-3 text-blue-500"></i>
+                                {{ field.label }}
+                            </label>
+                            
+                            <div class="relative">
+                                {% if field.field.widget.input_type == 'textarea' %}
+                                    <textarea name="{{ field.name }}" id="{{ field.id_for_label }}" rows="4" 
+                                              class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-300 placeholder-gray-400 resize-none"
+                                              placeholder="Enter your {{ field.label|lower }}">{{ field.value|default:'' }}</textarea>
+                                {% elif field.name == 'specialization' %}
+                                    <select name="{{ field.name }}" id="{{ field.id_for_label }}"
+                                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-300 bg-white">
+                                        <option value="">Select your specialization</option>
+                                        <option value="Cardiology" {% if field.value == 'Cardiology' %}selected{% endif %}>Cardiology</option>
+                                        <option value="Dermatology" {% if field.value == 'Dermatology' %}selected{% endif %}>Dermatology</option>
+                                        <option value="Neurology" {% if field.value == 'Neurology' %}selected{% endif %}>Neurology</option>
+                                        <option value="Pediatrics" {% if field.value == 'Pediatrics' %}selected{% endif %}>Pediatrics</option>
+                                        <option value="Orthopedics" {% if field.value == 'Orthopedics' %}selected{% endif %}>Orthopedics</option>
+                                        <option value="Gynecology" {% if field.value == 'Gynecology' %}selected{% endif %}>Gynecology</option>
+                                        <option value="Psychiatry" {% if field.value == 'Psychiatry' %}selected{% endif %}>Psychiatry</option>
+                                        <option value="Dentistry" {% if field.value == 'Dentistry' %}selected{% endif %}>Dentistry</option>
+                                        <option value="Ophthalmology" {% if field.value == 'Ophthalmology' %}selected{% endif %}>Ophthalmology</option>
+                                        <option value="General Practice" {% if field.value == 'General Practice' %}selected{% endif %}>General Practice</option>
+                                    </select>
+                                {% else %}
+                                    <input type="{{ field.field.widget.input_type }}" 
+                                           name="{{ field.name }}" 
+                                           id="{{ field.id_for_label }}"
+                                           value="{{ field.value|default:'' }}"
+                                           class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-300 placeholder-gray-400"
+                                           placeholder="Enter your {{ field.label|lower }}">
+                                {% endif %}
+                            </div>
+                            
+                            {% if field.help_text %}
+                                <div class="mt-3 flex items-center text-sm text-gray-500 bg-blue-50 rounded-lg px-4 py-2">
+                                    <i class="fas fa-info-circle mr-2 text-blue-400"></i>
+                                    {{ field.help_text }}
+                                </div>
+                            {% endif %}
+                            
+                            {% if field.errors %}
+                                <div class="mt-3 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded-r-lg animate-fadeIn flex items-center">
+                                    <i class="fas fa-exclamation-triangle mr-3 text-red-500"></i>
+                                    <div>
+                                        {% for error in field.errors %}
+                                            <p class="text-sm">{{ error }}</p>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+
+                    <!-- Action Buttons -->
+                    <div class="flex flex-col sm:flex-row gap-4 pt-6 border-t border-gray-200">
+                        <button type="submit" class="flex-1 gradient-bg text-white font-semibold py-4 px-6 rounded-xl hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 hover:scale-105 group">
+                            <span class="flex items-center justify-center">
+                                <i class="fas fa-save mr-3 group-hover:scale-110 transition-transform"></i>
+                                Update Profile
+                                <i class="fas fa-check ml-3 group-hover:scale-110 transition-transform"></i>
+                            </span>
+                        </button>
+                        
+                        <a href="{% url 'doctors:dashboard' %}" class="flex-1 bg-gray-100 text-gray-700 font-semibold py-4 px-6 rounded-xl hover:bg-gray-200 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 text-center group">
+                            <span class="flex items-center justify-center">
+                                <i class="fas fa-arrow-left mr-3 group-hover:-translate-x-1 transition-transform"></i>
+                                Back to Dashboard
+                            </span>
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Professional Information Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12">
+            <!-- Medical Credentials -->
+            <div class="bg-white rounded-2xl p-6 shadow-lg hover-lift transition-all duration-300 animate-fadeIn" style="animation-delay: 0.2s">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center text-blue-600">
+                        <i class="fas fa-graduation-cap text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800">Medical Credentials</h3>
+                </div>
+                <p class="text-gray-600 mb-4">Keep your professional credentials up to date for patient trust and regulatory compliance.</p>
+                <ul class="space-y-2 text-sm text-gray-600">
+                    <li class="flex items-center gap-2">
+                        <i class="fas fa-check text-blue-500"></i>
+                        Medical license verification
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <i class="fas fa-check text-blue-500"></i>
+                        Board certifications
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <i class="fas fa-check text-blue-500"></i>
+                        Education and training
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Practice Information -->
+            <div class="bg-white rounded-2xl p-6 shadow-lg hover-lift transition-all duration-300 animate-fadeIn" style="animation-delay: 0.4s">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-12 h-12 rounded-xl bg-indigo-100 flex items-center justify-center text-indigo-600">
+                        <i class="fas fa-hospital text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800">Practice Details</h3>
+                </div>
+                <p class="text-gray-600 mb-4">Ensure your practice information is accurate for better patient communication and scheduling.</p>
+                <ul class="space-y-2 text-sm text-gray-600">
+                    <li class="flex items-center gap-2">
+                        <i class="fas fa-check text-indigo-500"></i>
+                        Contact information
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <i class="fas fa-check text-indigo-500"></i>
+                        Practice location
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <i class="fas fa-check text-indigo-500"></i>
+                        Office hours
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Professional Notice -->
+        <div class="mt-8 bg-blue-50 border border-blue-200 rounded-2xl p-6 animate-fadeIn" style="animation-delay: 0.6s">
+            <div class="flex items-start gap-4">
+                <div class="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center text-blue-600 flex-shrink-0">
+                    <i class="fas fa-shield-alt text-xl"></i>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold text-blue-800 mb-2">Professional Verification</h4>
+                    <p class="text-blue-700 text-sm">
+                        Your medical credentials and professional information are verified to maintain the highest standards 
+                        of healthcare quality. Any changes to your credentials may require re-verification.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.animate-fadeIn {
+    animation: fadeIn 0.6s ease-out forwards;
+    opacity: 0;
+}
+
+.animate-slideIn {
+    animation: slideIn 0.5s ease-out forwards;
+    opacity: 0;
+}
+
+/* Staggered delays for form fields */
+.form-field-0 { animation-delay: 0.1s; }
+.form-field-1 { animation-delay: 0.2s; }
+.form-field-2 { animation-delay: 0.3s; }
+.form-field-3 { animation-delay: 0.4s; }
+.form-field-4 { animation-delay: 0.5s; }
+.form-field-5 { animation-delay: 0.6s; }
+.form-field-6 { animation-delay: 0.7s; }
+.form-field-7 { animation-delay: 0.8s; }
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.hover-lift {
+    transition: all 0.3s ease;
+}
+
+.hover-lift:hover {
+    transform: translateY(-5px);
+}
+
+.gradient-bg {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.animate-pulse-glow {
+    animation: pulse-glow 2s infinite;
+}
+
+@keyframes pulse-glow {
+    0%, 100% { 
+        box-shadow: 0 0 5px rgba(102, 126, 234, 0.5); 
+    }
+    50% { 
+        box-shadow: 0 0 20px rgba(102, 126, 234, 0.8); 
+    }
+}
+
+/* Form field styling */
+input, select, textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    background: white;
+    font-family: inherit;
+}
+
+input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    transform: translateY(-1px);
+}
+
+/* Success state */
+input:valid, select:valid, textarea:valid {
+    border-color: #10b981;
+}
+</style>
+
+<script>
+// Add focus effects to form fields
+document.addEventListener('DOMContentLoaded', function() {
+    const formInputs = document.querySelectorAll('input, select, textarea');
+    formInputs.forEach(input => {
+        input.addEventListener('focus', function() {
+            this.parentElement.classList.add('ring-2', 'ring-blue-200', 'rounded-xl');
+        });
+        
+        input.addEventListener('blur', function() {
+            this.parentElement.classList.remove('ring-2', 'ring-blue-200', 'rounded-xl');
+        });
+    });
+
+    // Specialization select enhancement
+    const specializationSelect = document.querySelector('select[name="specialization"]');
+    if (specializationSelect) {
+        specializationSelect.addEventListener('change', function() {
+            if (this.value) {
+                this.classList.add('border-blue-500', 'bg-blue-50');
+            } else {
+                this.classList.remove('border-blue-500', 'bg-blue-50');
+            }
+        });
+        
+        // Initialize if already has value
+        if (specializationSelect.value) {
+            specializationSelect.classList.add('border-blue-500', 'bg-blue-50');
+        }
+    }
+
+    // Character counter for textareas
+    const textareas = document.querySelectorAll('textarea');
+    textareas.forEach(textarea => {
+        const counter = document.createElement('div');
+        counter.className = 'text-right text-sm text-gray-500 mt-1';
+        textarea.parentNode.appendChild(counter);
+        
+        function updateCounter() {
+            const maxLength = textarea.maxLength || 500;
+            const currentLength = textarea.value.length;
+            counter.textContent = `${currentLength}/${maxLength}`;
+            
+            if (currentLength > maxLength * 0.8) {
+                counter.classList.add('text-orange-500');
+                counter.classList.remove('text-gray-500');
+            } else {
+                counter.classList.remove('text-orange-500');
+                counter.classList.add('text-gray-500');
+            }
+        }
+        
+        textarea.addEventListener('input', updateCounter);
+        updateCounter();
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,223 @@
+{% extends 'base.html' %}
+
+{% block title %}Book Appointment{% endblock %}
+
+{% block content %}
+<div class="min-h-screen py-8 animate-fadeIn">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <div class="w-20 h-20 rounded-2xl gradient-bg flex items-center justify-center mx-auto mb-6 animate-pulse-glow">
+                <i class="fas fa-calendar-plus text-white text-3xl"></i>
+            </div>
+            <h1 class="text-4xl font-bold text-gray-800 mb-4">Book Your Appointment</h1>
+            <p class="text-xl text-gray-600 max-w-2xl mx-auto">Schedule your visit with our healthcare professionals</p>
+        </div>
+
+        <!-- Appointment Form -->
+        <div class="bg-white rounded-3xl shadow-2xl overflow-hidden transform transition-all duration-500 hover:shadow-3xl hover-lift">
+            <!-- Form Header -->
+            <div class="gradient-bg text-white px-8 py-6 text-center">
+                <h2 class="text-2xl font-bold flex items-center justify-center gap-3">
+                    <i class="fas fa-calendar-check"></i>
+                    Appointment Details
+                </h2>
+            </div>
+
+            <!-- Form Body -->
+            <div class="p-8">
+                <form method="post" class="space-y-8">
+                    {% csrf_token %}
+                    
+                    {% for field in form %}
+                         <div class="animate-slideIn delay-{{ forloop.counter0 }}">
+                            <label for="{{ field.id_for_label }}" class="block text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                                <i class="fas fa-{% cycle 'user-md' 'calendar' 'clock' 'stethoscope' %} mr-3 text-blue-500"></i>
+                                {{ field.label }}
+                            </label>
+                            
+                            <div class="relative">
+                                {{ field }}
+                            </div>
+                            
+                            {% if field.help_text %}
+                                <div class="mt-3 flex items-center text-sm text-gray-500 bg-blue-50 rounded-lg px-4 py-2">
+                                    <i class="fas fa-info-circle mr-2 text-blue-400"></i>
+                                    {{ field.help_text }}
+                                </div>
+                            {% endif %}
+                            
+                            {% if field.errors %}
+                                <div class="mt-3 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded-r-lg animate-fadeIn flex items-center">
+                                    <i class="fas fa-exclamation-triangle mr-3 text-red-500"></i>
+                                    <div>
+                                        {% for error in field.errors %}
+                                            <p class="text-sm">{{ error }}</p>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+
+                    <!-- Action Buttons -->
+                    <div class="flex flex-col sm:flex-row gap-4 pt-6 border-t border-gray-200">
+                        <button type="submit" class="flex-1 gradient-bg text-white font-semibold py-4 px-6 rounded-xl hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 hover:scale-105 group">
+                            <span class="flex items-center justify-center">
+                                <i class="fas fa-calendar-check mr-3 group-hover:scale-110 transition-transform"></i>
+                                Book Appointment
+                                <i class="fas fa-arrow-right ml-3 group-hover:translate-x-1 transition-transform"></i>
+                            </span>
+                        </button>
+                        
+                        <a href="{% url 'patients:dashboard' %}" class="flex-1 bg-gray-100 text-gray-700 font-semibold py-4 px-6 rounded-xl hover:bg-gray-200 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 text-center group">
+                            <span class="flex items-center justify-center">
+                                <i class="fas fa-arrow-left mr-3 group-hover:-translate-x-1 transition-transform"></i>
+                                Back to Dashboard
+                            </span>
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Additional Info -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
+            <div class="bg-white rounded-2xl p-6 shadow-lg text-center hover-lift transition-all duration-300 animate-fadeIn" style="animation-delay: 0.2s">
+                <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 mx-auto mb-4">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <h3 class="font-semibold text-gray-800 mb-2">Flexible Timing</h3>
+                <p class="text-gray-600 text-sm">Choose from available slots that fit your schedule</p>
+            </div>
+            
+            <div class="bg-white rounded-2xl p-6 shadow-lg text-center hover-lift transition-all duration-300 animate-fadeIn" style="animation-delay: 0.4s">
+                <div class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center text-green-600 mx-auto mb-4">
+                    <i class="fas fa-user-md"></i>
+                </div>
+                <h3 class="font-semibold text-gray-800 mb-2">Expert Doctors</h3>
+                <p class="text-gray-600 text-sm">Consult with qualified healthcare professionals</p>
+            </div>
+            
+            <div class="bg-white rounded-2xl p-6 shadow-lg text-center hover-lift transition-all duration-300 animate-fadeIn" style="animation-delay: 0.6s">
+                <div class="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 mx-auto mb-4">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h3 class="font-semibold text-gray-800 mb-2">Secure & Private</h3>
+                <p class="text-gray-600 text-sm">Your medical information is protected</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.animate-fadeIn {
+    animation: fadeIn 0.6s ease-out forwards;
+    opacity: 0;
+}
+
+.animate-slideIn {
+    animation: slideIn 0.5s ease-out forwards;
+    opacity: 0;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.hover-lift {
+    transition: all 0.3s ease;
+}
+
+.hover-lift:hover {
+    transform: translateY(-5px);
+}
+
+.gradient-bg {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.animate-pulse-glow {
+    animation: pulse-glow 2s infinite;
+}
+
+@keyframes pulse-glow {
+    0%, 100% { 
+        box-shadow: 0 0 5px rgba(102, 126, 234, 0.5); 
+    }
+    50% { 
+        box-shadow: 0 0 20px rgba(102, 126, 234, 0.8); 
+    }
+}
+
+/* Form field styling */
+input, select, textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    transform: translateY(-1px);
+}
+
+/* Error state */
+input:invalid, select:invalid, textarea:invalid {
+    border-color: #ef4444;
+}
+
+/* Success state */
+input:valid, select:valid, textarea:valid {
+    border-color: #10b981;
+}
+</style>
+
+<script>
+// Add animation delays for form fields
+document.addEventListener('DOMContentLoaded', function() {
+    const formFields = document.querySelectorAll('.animate-slideIn');
+    formFields.forEach((field, index) => {
+        if (!field.style.animationDelay) {
+            field.style.animationDelay = `${(index * 0.1) + 0.1}s`;
+        }
+    });
+    
+    // Add focus effects to form fields
+    const formInputs = document.querySelectorAll('input, select, textarea');
+    formInputs.forEach(input => {
+        input.addEventListener('focus', function() {
+            this.parentElement.classList.add('ring-2', 'ring-blue-200', 'rounded-xl');
+        });
+        
+        input.addEventListener('blur', function() {
+            this.parentElement.classList.remove('ring-2', 'ring-blue-200', 'rounded-xl');
+        });
+    });
+});
+</script>
+{% endblock %}

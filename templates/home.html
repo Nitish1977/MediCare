@@ -1,0 +1,442 @@
+﻿{% extends "base.html" %}
+{% block title %}Welcome to Hospital Management System{% endblock %}
+{% block content %}
+{% if user.is_authenticated %}
+<!-- Logged In User View -->
+<div class="py-12 animate-fadeIn">
+    <div class="max-w-6xl mx-auto px-4">
+        <!-- Welcome Card with Date & Time -->
+        <div class="bg-white rounded-2xl shadow-xl p-8 transform transition-all duration-300 hover:shadow-2xl mb-8">
+            <div class="flex items-start justify-between">
+                <div class="flex items-center">
+                    <div class="w-20 h-20 rounded-2xl gradient-bg flex items-center justify-center text-white text-2xl font-bold mr-6">
+                        {% if user.doctor %}Dr{% else %}P{% endif %}
+                    </div>
+                    <div>
+                        <h2 class="text-4xl font-bold text-gray-800 mb-2">Welcome {% if user.doctor %}Dr.{% endif %} {{ user.get_full_name|default:user.username }}</h2>
+                        <p class="text-gray-600 text-lg mb-4">Access your dashboard to manage appointments and patient care.</p>
+                        
+                        <!-- Current Date and Time -->
+                        <div class="flex items-center gap-6 text-sm text-gray-500">
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-calendar-day text-blue-500"></i>
+                                <span id="current-date" class="font-semibold"></span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-clock text-blue-500"></i>
+                                <span id="current-time" class="font-semibold"></span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-calendar-alt text-blue-500"></i>
+                                <span id="current-day" class="font-semibold"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+    
+            </div>
+        </div>
+
+        <!-- Main Actions Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            {% if user.doctor %}
+                <!-- Doctor Quick Actions -->
+                <div class="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-2xl p-6 transform transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center">
+                            <i class="fas fa-user-md text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold">Doctor Dashboard</h3>
+                    </div>
+                    <p class="text-blue-100 mb-4">Manage your patient appointments, schedule, and medical practice.</p>
+                    <div class="space-y-2">
+                        <div class="flex items-center gap-2 text-sm">
+                            <i class="fas fa-check-circle text-green-300"></i>
+                            <span>View patient appointments</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-sm">
+                            <i class="fas fa-check-circle text-green-300"></i>
+                            <span>Manage your schedule</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-sm">
+                            <i class="fas fa-check-circle text-green-300"></i>
+                            <span>Update patient records</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-2xl p-6 transform transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center">
+                            <i class="fas fa-calendar-check text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold">Today's Schedule</h3>
+                    </div>
+                    <p class="text-purple-100 mb-4">You have 3 appointments scheduled for today.</p>
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center text-sm">
+                            <span>09:00 AM</span>
+                            <span class="bg-white/20 px-2 py-1 rounded">John Doe</span>
+                        </div>
+                        <div class="flex justify-between items-center text-sm">
+                            <span>11:30 AM</span>
+                            <span class="bg-white/20 px-2 py-1 rounded">Jane Smith</span>
+                        </div>
+                        <div class="flex justify-between items-center text-sm">
+                            <span>02:15 PM</span>
+                            <span class="bg-white/20 px-2 py-1 rounded">Mike Johnson</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-gradient-to-br from-teal-500 to-teal-600 text-white rounded-2xl p-6 transform transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center">
+                            <i class="fas fa-chart-line text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold">Practice Insights</h3>
+                    </div>
+                    <p class="text-teal-100 mb-4">Your practice performance this week.</p>
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center text-sm">
+                            <span>Weekly Appointments</span>
+                            <span class="font-bold">24</span>
+                        </div>
+                        <div class="flex justify-between items-center text-sm">
+                            <span>Patient Satisfaction</span>
+                            <span class="font-bold">98%</span>
+                        </div>
+                        <div class="flex justify-between items-center text-sm">
+                            <span>Available Slots</span>
+                            <span class="font-bold">12</span>
+                        </div>
+                    </div>
+                </div>
+
+            {% else %}
+                <!-- Patient Quick Actions -->
+                <div class="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-2xl p-6 transform transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center">
+                            <i class="fas fa-user-injured text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold">Patient Dashboard</h3>
+                    </div>
+                    <p class="text-blue-100 mb-4">Manage your healthcare journey and appointments.</p>
+                    <div class="space-y-2">
+                        <div class="flex items-center gap-2 text-sm">
+                            <i class="fas fa-check-circle text-green-300"></i>
+                            <span>Book new appointments</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-sm">
+                            <i class="fas fa-check-circle text-green-300"></i>
+                            <span>View medical history</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-sm">
+                            <i class="fas fa-check-circle text-green-300"></i>
+                            <span>Message your doctor</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-gradient-to-br from-green-500 to-green-600 text-white rounded-2xl p-6 transform transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center">
+                            <i class="fas fa-calendar-day text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold">Upcoming Appointments</h3>
+                    </div>
+                    <p class="text-green-100 mb-4">Your next appointment is in 2 days.</p>
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center text-sm">
+                            <span>Tomorrow</span>
+                            <span class="bg-white/20 px-2 py-1 rounded">10:00 AM</span>
+                        </div>
+                        <div class="flex justify-between items-center text-sm">
+                            <span>Dr. Smith</span>
+                            <span class="text-green-300">Confirmed</span>
+                        </div>
+                        <div class="text-xs text-green-200">Cardiology Department</div>
+                    </div>
+                </div>
+
+                <div class="bg-gradient-to-br from-indigo-500 to-indigo-600 text-white rounded-2xl p-6 transform transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center">
+                            <i class="fas fa-heartbeat text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold">Health Summary</h3>
+                    </div>
+                    <p class="text-indigo-100 mb-4">Your recent health metrics and records.</p>
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center text-sm">
+                            <span>Last Checkup</span>
+                            <span class="font-bold">2 weeks ago</span>
+                        </div>
+                        <div class="flex justify-between items-center text-sm">
+                            <span>Medications</span>
+                            <span class="font-bold">3 Active</span>
+                        </div>
+                        <div class="flex justify-between items-center text-sm">
+                            <span>Next Follow-up</span>
+                            <span class="font-bold">In 1 month</span>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+
+        <!-- Additional Content -->
+        <div class="mt-12 grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="bg-white rounded-2xl p-6 shadow-lg">
+                <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                    <i class="fas fa-bell text-yellow-500"></i>
+                    Recent Activity
+                </h3>
+                <div class="space-y-3">
+                    <div class="flex items-center gap-3 p-3 bg-blue-50 rounded-lg">
+                        <i class="fas fa-calendar-check text-green-500"></i>
+                        <div>
+                            <p class="text-sm font-semibold">Appointment Confirmed</p>
+                            <p class="text-xs text-gray-600">Your appointment has been confirmed</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3 p-3 bg-green-50 rounded-lg">
+                        <i class="fas fa-user-md text-blue-500"></i>
+                        <div>
+                            <p class="text-sm font-semibold">New Message</p>
+                            <p class="text-xs text-gray-600">You have a new message from your doctor</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl p-6 shadow-lg">
+                <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                    <i class="fas fa-chart-line text-purple-500"></i>
+                    Quick Stats
+                </h3>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="text-center p-4 bg-blue-50 rounded-xl">
+                        <div class="text-2xl font-bold text-blue-600">5</div>
+                        <div class="text-sm text-blue-700">Total Appointments</div>
+                    </div>
+                    <div class="text-center p-4 bg-green-50 rounded-xl">
+                        <div class="text-2xl font-bold text-green-600">3</div>
+                        <div class="text-sm text-green-700">Completed</div>
+                    </div>
+                    <div class="text-center p-4 bg-yellow-50 rounded-xl">
+                        <div class="text-2xl font-bold text-yellow-600">1</div>
+                        <div class="text-sm text-yellow-700">Upcoming</div>
+                    </div>
+                    <div class="text-center p-4 bg-purple-50 rounded-xl">
+                        <div class="text-2xl font-bold text-purple-600">1</div>
+                        <div class="text-sm text-purple-700">Pending</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Update current date, time, and day
+function updateDateTime() {
+    const now = new Date();
+    
+    // Format date
+    const optionsDate = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    const dateString = now.toLocaleDateString('en-US', optionsDate);
+    
+    // Format time
+    const timeString = now.toLocaleTimeString('en-US', { 
+        hour: '2-digit', 
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true 
+    });
+    
+    // Format day
+    const optionsDay = { weekday: 'long' };
+    const dayString = now.toLocaleDateString('en-US', optionsDay);
+    
+    document.getElementById('current-date').textContent = dateString;
+    document.getElementById('current-time').textContent = timeString;
+    document.getElementById('current-day').textContent = dayString;
+}
+
+// Update every second
+updateDateTime();
+setInterval(updateDateTime, 1000);
+</script>
+
+{% else %}
+<!-- Non-Logged In User View -->
+<!-- Hero Section -->
+<section class="gradient-bg text-white py-20 rounded-b-[40px] shadow-2xl relative overflow-hidden">
+    <!-- Background decoration -->
+    <div class="absolute top-0 left-0 w-full h-full overflow-hidden opacity-10">
+        <div class="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-white"></div>
+        <div class="absolute -bottom-32 -left-32 w-80 h-80 rounded-full bg-white"></div>
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 rounded-full bg-white"></div>
+    </div>
+    
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div class="grid md:grid-cols-2 gap-12 items-center">
+            <div class="space-y-6 animate-slideIn">
+                <h1 class="text-5xl md:text-6xl font-bold leading-tight">Advanced <span class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-orange-300">Healthcare</span> Management</h1>
+                <p class="text-xl text-blue-100">Streamline your hospital operations with our comprehensive management system designed for modern healthcare facilities.</p>
+                <a href="{% url 'login' %}" class="inline-flex items-center bg-white text-blue-600 px-8 py-4 rounded-2xl font-semibold hover:bg-blue-50 transition-all duration-300 shadow-lg hover:shadow-xl hover-lift">
+                    Get Started <i class="fas fa-arrow-right ml-3 transition-transform group-hover:translate-x-1"></i>
+                </a>
+            </div>
+            <div class="text-center animate-fadeIn">
+                <div class="relative inline-block">
+                    <img src="https://images.unsplash.com/photo-1532938911079-1b06ac7ceec7?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Healthcare" class="w-full rounded-[30px] shadow-2xl hover-lift transition-all duration-500">
+                    <div class="absolute -bottom-6 -right-6 bg-white rounded-2xl p-4 shadow-2xl">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center text-green-600 mr-3">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="text-left">
+                                <p class="font-bold text-gray-800">24/7 Support</p>
+                                <p class="text-xs text-gray-600">Always here to help</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- About Section -->
+<section id="about" class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid md:grid-cols-2 gap-12 items-center">
+            <div class="space-y-6 animate-fadeIn">
+                <h2 class="text-4xl font-bold text-gray-800">About Our Hospital Management System</h2>
+                <p class="text-gray-600 text-lg">Our comprehensive platform is designed to streamline healthcare operations, improve patient care, and enhance communication between medical professionals and patients.</p>
+                <div class="space-y-4">
+                    <div class="flex gap-4 p-4 bg-white rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 hover-lift">
+                        <i class="fas fa-shield-alt text-blue-500 text-2xl flex-shrink-0 mt-1"></i>
+                        <div>
+                            <h5 class="font-semibold text-gray-800">Secure & Compliant</h5>
+                            <p class="text-gray-600">All data is encrypted and HIPAA compliant to ensure patient privacy.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-4 p-4 bg-white rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 hover-lift">
+                        <i class="fas fa-mobile-alt text-green-500 text-2xl flex-shrink-0 mt-1"></i>
+                        <div>
+                            <h5 class="font-semibold text-gray-800">Easy to Use</h5>
+                            <p class="text-gray-600">Intuitive interface designed for both medical professionals and patients.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-4 p-4 bg-white rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 hover-lift">
+                        <i class="fas fa-clock text-purple-500 text-2xl flex-shrink-0 mt-1"></i>
+                        <div>
+                            <h5 class="font-semibold text-gray-800">24/7 Access</h5>
+                            <p class="text-gray-600">Access your medical information anytime, anywhere.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section id="features" class="py-20 bg-gradient-to-br from-slate-50 to-blue-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl font-bold text-gray-800 mb-4">Key Features</h2>
+            <p class="text-xl text-gray-600 max-w-2xl mx-auto">Discover how our system can transform healthcare management and improve patient outcomes</p>
+        </div>
+        <div class="grid md:grid-cols-3 gap-8">
+            <!-- Feature 1 -->
+            <div class="bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 hover-lift group animate-fadeIn">
+                <div class="flex justify-center mb-6">
+                    <div class="bg-blue-100 text-blue-600 w-20 h-20 rounded-2xl flex items-center justify-center text-4xl group-hover:scale-110 transition-transform duration-300">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                </div>
+                <h4 class="text-2xl font-bold text-center text-gray-800 mb-4">Appointment Management</h4>
+                <p class="text-center text-gray-600">Easily schedule, reschedule, and manage appointments with an intuitive calendar interface.</p>
+            </div>
+            
+            <!-- Feature 2 -->
+            <div class="bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 hover-lift group animate-fadeIn" style="animation-delay: 0.1s;">
+                <div class="flex justify-center mb-6">
+                    <div class="bg-teal-100 text-teal-600 w-20 h-20 rounded-2xl flex items-center justify-center text-4xl group-hover:scale-110 transition-transform duration-300">
+                        <i class="fas fa-file-medical"></i>
+                    </div>
+                </div>
+                <h4 class="text-2xl font-bold text-center text-gray-800 mb-4">Medical Records</h4>
+                <p class="text-center text-gray-600">Secure digital storage and access to patient medical histories, prescriptions, and test results.</p>
+            </div>
+            
+            <!-- Feature 3 -->
+            <div class="bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 hover-lift group animate-fadeIn" style="animation-delay: 0.2s;">
+                <div class="flex justify-center mb-6">
+                    <div class="bg-purple-100 text-purple-600 w-20 h-20 rounded-2xl flex items-center justify-center text-4xl group-hover:scale-110 transition-transform duration-300">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                </div>
+                <h4 class="text-2xl font-bold text-center text-gray-800 mb-4">Secure Messaging</h4>
+                <p class="text-center text-gray-600">HIPAA-compliant communication between doctors and patients for follow-ups and consultations.</p>
+            </div>
+            
+            <!-- Feature 4 -->
+            <div class="bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 hover-lift group animate-fadeIn" style="animation-delay: 0.3s;">
+                <div class="flex justify-center mb-6">
+                    <div class="bg-green-100 text-green-600 w-20 h-20 rounded-2xl flex items-center justify-center text-4xl group-hover:scale-110 transition-transform duration-300">
+                        <i class="fas fa-prescription"></i>
+                    </div>
+                </div>
+                <h4 class="text-2xl font-bold text-center text-gray-800 mb-4">E-Prescriptions</h4>
+                <p class="text-center text-gray-600">Digital prescription management with automated refill requests and pharmacy integration.</p>
+            </div>
+            
+            <!-- Feature 5 -->
+            <div class="bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 hover-lift group animate-fadeIn" style="animation-delay: 0.4s;">
+                <div class="flex justify-center mb-6">
+                    <div class="bg-orange-100 text-orange-600 w-20 h-20 rounded-2xl flex items-center justify-center text-4xl group-hover:scale-110 transition-transform duration-300">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                </div>
+                <h4 class="text-2xl font-bold text-center text-gray-800 mb-4">Analytics & Reports</h4>
+                <p class="text-center text-gray-600">Comprehensive analytics and reporting tools for better decision-making and patient care insights.</p>
+            </div>
+            
+            <!-- Feature 6 -->
+            <div class="bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 hover-lift group animate-fadeIn" style="animation-delay: 0.5s;">
+                <div class="flex justify-center mb-6">
+                    <div class="bg-red-100 text-red-600 w-20 h-20 rounded-2xl flex items-center justify-center text-4xl group-hover:scale-110 transition-transform duration-300">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                </div>
+                <h4 class="text-2xl font-bold text-center text-gray-800 mb-4">Mobile Access</h4>
+                <p class="text-center text-gray-600">Fully responsive design with mobile app capabilities for on-the-go access to healthcare services.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-20 gradient-bg text-white rounded-t-[40px]">
+    <div class="max-w-4xl mx-auto text-center px-4">
+        <h2 class="text-4xl font-bold mb-6">Ready to Transform Your Healthcare Experience?</h2>
+        <p class="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">Join thousands of healthcare professionals and patients who trust our platform for their medical needs.</p>
+        <div class="flex gap-4 justify-center flex-wrap">
+            <a href="{% url 'login' %}" class="px-8 py-4 bg-white text-blue-600 rounded-2xl font-semibold hover:bg-blue-50 transition-all duration-300 shadow-lg hover:shadow-xl hover-lift">
+                Sign In to Your Account
+            </a>
+            <a href="{% url 'doctors:register' %}" class="px-8 py-4 border-2 border-white text-white rounded-2xl font-semibold hover:bg-white hover:text-blue-600 transition-all duration-300 hover-lift">
+                Register as Doctor
+            </a>
+        </div>
+    </div>
+</section>
+{% endif %}
+{% endblock %}

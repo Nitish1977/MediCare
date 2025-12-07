@@ -1,0 +1,337 @@
+{% extends 'base.html' %}
+
+{% block title %}Doctor Registration{% endblock %}
+
+{% block content %}
+<div class="min-h-screen py-12 px-4 animate-fadeIn">
+    <div class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <div class="w-20 h-20 rounded-2xl gradient-bg flex items-center justify-center mx-auto mb-6 animate-pulse-glow">
+                <i class="fas fa-user-md text-white text-3xl"></i>
+            </div>
+            <h1 class="text-4xl font-bold text-gray-800 mb-4">Doctor Registration</h1>
+            <p class="text-xl text-gray-600 max-w-md mx-auto">Join our healthcare platform and connect with patients</p>
+        </div>
+
+        <!-- Registration Form -->
+        <div class="bg-white rounded-3xl shadow-2xl overflow-hidden transform transition-all duration-500 hover:shadow-3xl hover-lift">
+            <!-- Form Header -->
+            <div class="gradient-bg text-white px-8 py-6 text-center">
+                <h2 class="text-2xl font-bold flex items-center justify-center gap-3">
+                    <i class="fas fa-stethoscope"></i>
+                    Professional Information
+                </h2>
+            </div>
+
+            <!-- Form Body -->
+            <div class="p-8">
+                <form method="post" class="space-y-6">
+                    {% csrf_token %}
+                    
+                    {% for field in form %}
+                        <div class="animate-slideIn form-field-{{ forloop.counter0 }}">
+                            <label for="{{ field.id_for_label }}" class="block text-lg font-semibold text-gray-800 mb-3 flex items-center">
+                                <i class="fas fa-{% cycle 'user' 'envelope' 'lock' 'id-card' 'graduation-cap' 'stethoscope' 'map-marker-alt' 'phone' 'file-medical' %} mr-3 text-blue-500"></i>
+                                {{ field.label }}
+                            </label>
+                            
+                            <div class="relative">
+                                {% if field.field.widget.input_type == 'textarea' %}
+                                    <textarea name="{{ field.name }}" id="{{ field.id_for_label }}" rows="4" 
+                                              class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-300 placeholder-gray-400 resize-none"
+                                              placeholder="Enter your {{ field.label|lower }}">{{ field.value|default:'' }}</textarea>
+                                {% elif field.field.widget.input_type == 'password' %}
+                                    <input type="password" name="{{ field.name }}" id="{{ field.id_for_label }}"
+                                           class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-300 placeholder-gray-400"
+                                           placeholder="Enter your {{ field.label|lower }}" 
+                                           value="{{ field.value|default:'' }}">
+                                    <i class="fas fa-eye absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 cursor-pointer hover:text-blue-500" 
+                                       onclick="togglePasswordVisibility('{{ field.id_for_label }}')"></i>
+                                {% elif field.name == 'specialization' %}
+                                    <select name="{{ field.name }}" id="{{ field.id_for_label }}"
+                                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-300 bg-white">
+                                        <option value="">Select your specialization</option>
+                                        <option value="Cardiology">Cardiology</option>
+                                        <option value="Dermatology">Dermatology</option>
+                                        <option value="Neurology">Neurology</option>
+                                        <option value="Pediatrics">Pediatrics</option>
+                                        <option value="Orthopedics">Orthopedics</option>
+                                        <option value="Gynecology">Gynecology</option>
+                                        <option value="Psychiatry">Psychiatry</option>
+                                        <option value="Dentistry">Dentistry</option>
+                                        <option value="Ophthalmology">Ophthalmology</option>
+                                        <option value="General Practice">General Practice</option>
+                                    </select>
+                                {% else %}
+                                    <input type="{{ field.field.widget.input_type }}" 
+                                           name="{{ field.name }}" 
+                                           id="{{ field.id_for_label }}"
+                                           value="{{ field.value|default:'' }}"
+                                           class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-300 placeholder-gray-400"
+                                           placeholder="Enter your {{ field.label|lower }}">
+                                {% endif %}
+                            </div>
+                            
+                            {% if field.help_text %}
+                                <div class="mt-2 flex items-center text-sm text-gray-500 bg-blue-50 rounded-lg px-4 py-2">
+                                    <i class="fas fa-info-circle mr-2 text-blue-400"></i>
+                                    {{ field.help_text }}
+                                </div>
+                            {% endif %}
+                            
+                            {% if field.errors %}
+                                <div class="mt-3 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded-r-lg animate-fadeIn flex items-center">
+                                    <i class="fas fa-exclamation-triangle mr-3 text-red-500"></i>
+                                    <div>
+                                        {% for error in field.errors %}
+                                            <p class="text-sm">{{ error }}</p>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+
+                    <!-- Professional Agreement -->
+                    <div class="flex items-start gap-3 p-4 bg-blue-50 rounded-xl animate-fadeIn border border-blue-200">
+                        <input type="checkbox" id="professional_terms" class="mt-1 rounded text-blue-600 focus:ring-blue-500" required>
+                        <label for="professional_terms" class="text-sm text-gray-700">
+                            <span class="font-semibold">Professional Commitment:</span> I certify that I am a licensed medical professional 
+                            and agree to abide by medical ethics, maintain patient confidentiality, and provide accurate information. 
+                            I understand that my credentials will be verified.
+                        </label>
+                    </div>
+
+                    <!-- Terms Agreement -->
+                    <div class="flex items-start gap-3 p-4 bg-gray-50 rounded-xl animate-fadeIn">
+                        <input type="checkbox" id="terms" class="mt-1 rounded text-blue-600 focus:ring-blue-500" required>
+                        <label for="terms" class="text-sm text-gray-600">
+                            I agree to the <a href="#" class="text-blue-600 hover:underline font-semibold">Terms of Service</a> 
+                            and <a href="#" class="text-blue-600 hover:underline font-semibold">Privacy Policy</a>.
+                        </label>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="w-full gradient-bg text-white font-semibold py-4 rounded-xl hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 hover:scale-105 group">
+                        <span class="flex items-center justify-center">
+                            <i class="fas fa-user-md mr-3 group-hover:scale-110 transition-transform"></i>
+                            Complete Doctor Registration
+                            <i class="fas fa-arrow-right ml-3 group-hover:translate-x-1 transition-transform"></i>
+                        </span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Footer -->
+            <div class="bg-gradient-to-br from-gray-50 to-blue-50 px-8 py-6 border-t border-gray-200 text-center">
+                <p class="text-gray-700 font-semibold mb-2">Already have a professional account?</p>
+                <a href="{% url 'login' %}" class="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 font-semibold transition-colors duration-300 group">
+                    <i class="fas fa-sign-in-alt group-hover:scale-110 transition-transform"></i>
+                    Sign in to your account
+                    <i class="fas fa-arrow-right ml-1 group-hover:translate-x-1 transition-transform"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Benefits Section -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
+            <div class="bg-white rounded-2xl p-6 shadow-lg text-center hover-lift transition-all duration-300 animate-fadeIn" style="animation-delay: 0.2s">
+                <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 mx-auto mb-4">
+                    <i class="fas fa-calendar-alt"></i>
+                </div>
+                <h3 class="font-semibold text-gray-800 mb-2">Appointment Management</h3>
+                <p class="text-gray-600 text-sm">Efficiently manage your schedule and patient appointments</p>
+            </div>
+            
+            <div class="bg-white rounded-2xl p-6 shadow-lg text-center hover-lift transition-all duration-300 animate-fadeIn" style="animation-delay: 0.4s">
+                <div class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center text-green-600 mx-auto mb-4">
+                    <i class="fas fa-file-medical"></i>
+                </div>
+                <h3 class="font-semibold text-gray-800 mb-2">Patient Records</h3>
+                <p class="text-gray-600 text-sm">Access and manage comprehensive patient medical records</p>
+            </div>
+            
+            <div class="bg-white rounded-2xl p-6 shadow-lg text-center hover-lift transition-all duration-300 animate-fadeIn" style="animation-delay: 0.6s">
+                <div class="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 mx-auto mb-4">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h3 class="font-semibold text-gray-800 mb-2">Practice Analytics</h3>
+                <p class="text-gray-600 text-sm">Gain insights into your practice with detailed analytics</p>
+            </div>
+        </div>
+
+        <!-- Verification Notice -->
+        <div class="mt-8 bg-yellow-50 border border-yellow-200 rounded-2xl p-6 animate-fadeIn" style="animation-delay: 0.8s">
+            <div class="flex items-start gap-4">
+                <div class="w-12 h-12 rounded-xl bg-yellow-100 flex items-center justify-center text-yellow-600 flex-shrink-0">
+                    <i class="fas fa-clipboard-check text-xl"></i>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold text-yellow-800 mb-2">Credential Verification Required</h4>
+                    <p class="text-yellow-700 text-sm">
+                        Your medical license and credentials will be verified before your account is activated. 
+                        This process typically takes 1-2 business days. You will receive an email confirmation 
+                        once your account is approved.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.animate-fadeIn {
+    animation: fadeIn 0.6s ease-out forwards;
+    opacity: 0;
+}
+
+.animate-slideIn {
+    animation: slideIn 0.5s ease-out forwards;
+    opacity: 0;
+}
+
+/* Staggered delays for form fields */
+.form-field-0 { animation-delay: 0.1s; }
+.form-field-1 { animation-delay: 0.2s; }
+.form-field-2 { animation-delay: 0.3s; }
+.form-field-3 { animation-delay: 0.4s; }
+.form-field-4 { animation-delay: 0.5s; }
+.form-field-5 { animation-delay: 0.6s; }
+.form-field-6 { animation-delay: 0.7s; }
+.form-field-7 { animation-delay: 0.8s; }
+.form-field-8 { animation-delay: 0.9s; }
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.hover-lift {
+    transition: all 0.3s ease;
+}
+
+.hover-lift:hover {
+    transform: translateY(-5px);
+}
+
+.gradient-bg {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.animate-pulse-glow {
+    animation: pulse-glow 2s infinite;
+}
+
+@keyframes pulse-glow {
+    0%, 100% { 
+        box-shadow: 0 0 5px rgba(102, 126, 234, 0.5); 
+    }
+    50% { 
+        box-shadow: 0 0 20px rgba(102, 126, 234, 0.8); 
+    }
+}
+
+/* Form field styling */
+input, select, textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    background: white;
+    font-family: inherit;
+}
+
+input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    transform: translateY(-1px);
+}
+
+/* Checkbox styling */
+input[type="checkbox"] {
+    width: auto;
+    transform: scale(1.2);
+}
+</style>
+
+<script>
+function togglePasswordVisibility(fieldId) {
+    const passwordField = document.getElementById(fieldId);
+    const eyeIcon = passwordField.nextElementSibling;
+    
+    if (passwordField.type === 'password') {
+        passwordField.type = 'text';
+        eyeIcon.classList.remove('fa-eye');
+        eyeIcon.classList.add('fa-eye-slash');
+    } else {
+        passwordField.type = 'password';
+        eyeIcon.classList.remove('fa-eye-slash');
+        eyeIcon.classList.add('fa-eye');
+    }
+}
+
+// Add focus effects to form fields
+document.addEventListener('DOMContentLoaded', function() {
+    const formInputs = document.querySelectorAll('input, select, textarea');
+    formInputs.forEach(input => {
+        input.addEventListener('focus', function() {
+            this.parentElement.classList.add('ring-2', 'ring-blue-200', 'rounded-xl');
+        });
+        
+        input.addEventListener('blur', function() {
+            this.parentElement.classList.remove('ring-2', 'ring-blue-200', 'rounded-xl');
+        });
+    });
+
+    // Form validation
+    const form = document.querySelector('form');
+    form.addEventListener('submit', function(e) {
+        const termsCheckbox = document.getElementById('terms');
+        const professionalCheckbox = document.getElementById('professional_terms');
+        
+        if (!termsCheckbox.checked || !professionalCheckbox.checked) {
+            e.preventDefault();
+            alert('Please agree to both the Professional Commitment and Terms of Service to continue.');
+            if (!professionalCheckbox.checked) {
+                professionalCheckbox.focus();
+            } else {
+                termsCheckbox.focus();
+            }
+        }
+    });
+
+    // Specialization select enhancement
+    const specializationSelect = document.querySelector('select[name="specialization"]');
+    if (specializationSelect) {
+        specializationSelect.addEventListener('change', function() {
+            if (this.value) {
+                this.classList.add('border-green-500', 'bg-green-50');
+            } else {
+                this.classList.remove('border-green-500', 'bg-green-50');
+            }
+        });
+    }
+});
+</script>
+{% endblock %}
